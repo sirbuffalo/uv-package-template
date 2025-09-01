@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 from .setup_logging import configure_logging, get_logger
+from .example_app_logic import some_app_logic
 
 configure_logging()
 logger = get_logger(__name__)
@@ -9,6 +10,7 @@ logger = get_logger(__name__)
 
 def main():
     logger.info("Hello from uv-package-template:main")
+    some_app_logic()
 
 
 def alt():

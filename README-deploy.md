@@ -3,12 +3,12 @@ Delete this if not using continous deployment to another machine via a github ac
 ------------
 
 High-level requirements from the deploy job:
-- A service user (vantracker) owns the app dir /opt/vantracker/vantracker and runs the systemd unit.
+- A service user (uv-package-template) owns the app dir /opt/uv-package-template/uv-package-template and runs the systemd unit.
 - The deploy user (DEPLOY_USER) can SSH in and run:
   - rsync as the service user without a password
   - uv sync as the service user without a password
-  - systemctl restart vantracker without a password
-- uv is installed for the service user (vantracker) and Python 3.13 is available.
+  - systemctl restart uv-package-template without a password
+- uv is installed for the service user (uv-package-template) and Python 3.13 is available.
 - Server has an environment file with secrets loaded by systemd.
 
 
@@ -23,17 +23,17 @@ env:
 
 
 1) Create users, dirs, packages
-- Create service user with no interactive shell and a HOME under /opt/vantracker.
+- Create service user with no interactive shell and a HOME under /opt/uv-package-template.
 - Create deploy user with SSH login.
 - Install minimal packages.
 
 ````bash
 # Create service user (no interactive shell)
-sudo useradd --system --create-home --home /opt/vantracker --shell /usr/sbin/nologin vantracker
+sudo useradd --system --create-home --home /opt/uv-package-template --shell /usr/sbin/nologin uv-package-template
 
 # Create app dir and assign ownership
-sudo mkdir -p /opt/vantracker/vantracker
-sudo chown -R vantracker:vantracker /opt/vantracker
+sudo mkdir -p /opt/uv-package-template/uv-package-template
+sudo chown -R uv-package-template:uv-package-template /opt/uv-package-template
 
 # Create deploy user (interactive)
 sudo adduser deployer
@@ -45,10 +45,10 @@ sudo apt install -y rsync openssh-server curl
 ````
 
 2) Install uv for the service user and pin Python
-The workflow runs dependency install as the service user via sudo -u vantracker -H … uv sync --frozen. Install uv into the service user’s HOME and set a default Python 3.13.
+The workflow runs dependency install as the service user via sudo -u uv-package-template -H … uv sync --frozen. Install uv into the service user’s HOME and set a default Python 3.13.
 
 ````bash
-sudo -u vantracker -H bash -lc '
+sudo -u uv-package-template -H bash -lc '
   curl -LsSf https://astral.sh/uv/install.sh | sh
   export PATH="$HOME/.local/bin:$PATH"
   uv --version
@@ -59,27 +59,27 @@ sudo -u vantracker -H bash -lc '
 3) Systemd unit to run the app
 - Loads secrets from an environment file.
 - Ensures PATH includes uv.
-- Points WorkingDirectory to /opt/vantracker/vantracker.
-- Uses gunicorn bound to 127.0.0.1:9000 per README.md.
+- Points WorkingDirectory to /opt/uv-package-template/uv-package-template.
+- Example uses gunicorn bound to 127.0.0.1:9000 as if app were a Flask app to serve
 
 ````ini
 [Unit]
-Description=VanTracker (Flask/Gunicorn)
+Description=uv-package-template (Flask/Gunicorn)
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=simple
-User=vantracker
-Group=vantracker
-WorkingDirectory=/opt/vantracker/vantracker
-EnvironmentFile=/etc/vantracker.env
+User=uv-package-template
+Group=uv-package-template
+WorkingDirectory=/opt/uv-package-template/uv-package-template
+EnvironmentFile=/etc/uv-package-template.env
 # Ensure uv is found; systemd does not inherit interactive PATHs
-Environment=PATH=/opt/vantracker/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+Environment=PATH=/opt/uv-package-template/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 # If you run without installing the package, ensure PYTHONPATH points at src
-# Environment=PYTHONPATH=/opt/vantracker/vantracker/src
+# Environment=PYTHONPATH=/opt/uv-package-template/uv-package-template/src
 
-ExecStart=/opt/vantracker/.local/bin/uv run gunicorn -w 2 -b 127.0.0.1:9000 "vantracker.webhook:app"
+ExecStart=/opt/uv-package-template/.local/bin/uv run gunicorn -w 2 -b 127.0.0.1:9000 "uv-package-template.cli:main"
 Restart=on-failure
 RestartSec=3s
 KillSignal=SIGINT
@@ -94,28 +94,27 @@ Matches what the app expects in get_drive_time.py, get_location.py, and webhook.
 
 ````bash
 # Create env file (root-owned, 0600)
-sudo install -m 0600 -o root -g root /dev/stdin /etc/vantracker.env <<'EOF'
-GOOGLE_MAPS_API_KEY=...
-TRACCAR_TOKEN=...
-WEBHOOKS_BEARER_TOKEN=...
+sudo install -m 0600 -o root -g root /dev/stdin /etc/uv-package-template.env <<'EOF'
+EXAMPLE_API_KEY=...
+EXAMPLE_TOKEN=...
 # If running without installing the package:
-# PYTHONPATH=/opt/vantracker/vantracker/src
+# PYTHONPATH=/opt/uv-package-template/uv-package-template/src
 EOF
 ````
 
 5) Sudoers for deploy workflow
 The job in ci-deploy.yml runs:
-- rsync with --rsync-path="sudo -n -u vantracker -H /usr/bin/rsync"
-- remote install via sudo -n -u vantracker -H bash -lc '... uv sync --frozen'
-- service restart via sudo -n systemctl restart vantracker
+- rsync with --rsync-path="sudo -n -u uv-package-template -H /usr/bin/rsync"
+- remote install via sudo -n -u uv-package-template -H bash -lc '... uv sync --frozen'
+- service restart via sudo -n systemctl restart uv-package-template
 
 Grant only these specific commands NOPASSWD.
 
 ````conf
 # Allow deployer to run specific commands without a password
 Defaults:deployer !requiretty
-deployer ALL=(vantracker) NOPASSWD: /usr/bin/rsync, /usr/bin/bash, /opt/vantracker/.local/bin/uv
-deployer ALL=NOPASSWD: /bin/systemctl restart vantracker, /bin/systemctl status vantracker
+deployer ALL=(uv-package-template) NOPASSWD: /usr/bin/rsync, /usr/bin/bash, /opt/uv-package-template/.local/bin/uv
+deployer ALL=NOPASSWD: /bin/systemctl restart uv-package-template, /bin/systemctl status uv-package-template
 ````
 
 6) SSH for deploy user
@@ -137,18 +136,14 @@ sudo -u deployer -H chmod 600 /home/deployer/.ssh/authorized_keys
 - Enable and start the service.
 
 ````bash
-# Let CI populate /opt/vantracker/vantracker via rsync
+# Let CI populate /opt/uv-package-template/uv-package-template via rsync
 sudo systemctl daemon-reload
-sudo systemctl enable --now vantracker
-sudo systemctl status vantracker --no-pager
-tail -n 200 -f /opt/vantracker/vantracker/app.log
+sudo systemctl enable --now uv-package-template
+sudo systemctl status uv-package-template --no-pager
+tail -n 200 -f /opt/uv-package-template/uv-package-template/app.log
 ````
 
-8) Networking notes
-- The app binds to 127.0.0.1:9000 via gunicorn, so no public firewall opening is required.
-- Ensure Traccar (on the same host) forwards to http://127.0.0.1:9000/traccar/events with the correct bearer per traccar.xml.
-
-9) CI secrets
+8) CI secrets
 - In repo settings, set:
   - DEPLOY_HOST, DEPLOY_USER (e.g., deployer), DEPLOY_SSH_KEY (private key matching the authorized_keys above).
 
@@ -156,6 +151,6 @@ Optional hardening
 - Restrict SSH: Disable root login; limit AllowUsers to deployer.
 - Validate sudoers with visudo -c.
 - Keep uv and Python fresh under the service user:
-  sudo -u vantracker -H bash -lc 'uv self update && uv python install --default 3.13 && uv sync --frozen'
+  sudo -u uv-package-template -H bash -lc 'uv self update && uv python install --default 3.13 && uv sync --frozen'
 
 This setup aligns with your deploy job and runtime entrypoint. After CI pushes a change to main/master, the workflow rsyncs the repo, runs uv sync as the service user, and restarts the systemd unit.
