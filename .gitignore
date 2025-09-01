@@ -1,0 +1,43 @@
+# Environment variables and secrets
+.env
+.env.*
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.cover
+.coverage*
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.log
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# macOS
+.DS_Store
+
+# Tools & editors
+.idea/
+# VS Code: keep only curated files
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+
+# Byte-compiled / optimized / DLL files
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs and databases
+*.log
+

@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, trunk, "release/*"]
+  pull_request:
+    branches: ["**"]
+
+env:
+  PYTHON_VERSION: "3.13"
+  # Configuration for disabled deployment task - see README to configure
+  # SERVICE_USER: "uv-package-template"
+  # SERVICE_NAME: "uv-package-template"
+  # APP_USER_ROOT: "/opt/${{ env.SERVICE_USER }}"
+  # APP_DIR: "${{ env.SERVICE_USER }}/${{ env.SERVICE_NAME }}"
+  # CONCURRENCY_GROUP: "${{ env.SERVICE_NAME }}-prod"
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install dependencies (locked)
+        run: uv sync --frozen --extra dev
+
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Test (pytest)
+        run: uv run pytest -q
+
+  # Requires significant setup on Ubuntu machine (see README)
+  # deploy:
+  #   needs: lint-and-test
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 15
+  #   concurrency:
+  #     group: ${{ env.CONCURRENCY_GROUP }}
+  #     cancel-in-progress: false
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+
+  #     - name: Start ssh-agent
+  #       uses: webfactory/ssh-agent@v0.9.0
+  #       with:
+  #         ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+  #     - name: Trust host
+  #       run: |
+  #         mkdir -p ~/.ssh
+  #         ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+  #     - name: Rsync code to server
+  #       run: |
+  #         rsync -az --delete \
+  #           --exclude '.git' \
+  #           --exclude '.github' \
+  #           --exclude '.venv' \
+  #           --exclude '.pytest_cache' \
+  #           --exclude '.ruff_cache' \
+  #           --exclude '.vscode' \
+  #           --exclude 'app.log' \
+  #           --rsync-path="sudo -n -u ${{ env.SERVICE_USER }} -H /usr/bin/rsync" \
+  #           ./ \
+  #           "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ env.APP_DIR }}"
+
+  #     - name: Install deps & restart service (remote)
+  #       run: |
+  #         ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" <<'EOF'
+  #         set -euo pipefail
+  #         # Install dependencies as the service user so the environment lives under its HOME
+  #         sudo -n -u ${{ env.SERVICE_USER }} -H bash -lc '
+  #           export PATH=${{ env.APP_USER_ROOT }}.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+  #           cd ${{ env.APP_DIR }}
+  #           uv sync --frozen
+  #         '
+  #         sudo -n systemctl restart ${{ env.SERVICE_NAME }}
+  #         sudo -n systemctl --no-pager --full status ${{ env.SERVICE_NAME }} | sed -n "1,10p"
+  #         EOF
