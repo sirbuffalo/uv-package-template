@@ -1,0 +1,68 @@
+name: Deploy (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      service_user:
+        type: string
+        default: "uv-package-template"
+      service_name:
+        type: string
+        default: "uv-package-template"
+      app_user_root:
+        type: string
+        default: "/opt/uv-package-template"
+      app_dir:
+        type: string
+        default: "uv-package-template/uv-package-template"
+      concurrency_group:
+        type: string
+        default: "uv-package-template-prod"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: ${{ inputs.concurrency_group }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Trust host
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Rsync code to server
+        run: |
+          rsync -az --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.venv' \
+            --exclude '.pytest_cache' \
+            --exclude '.ruff_cache' \
+            --exclude '.vscode' \
+            --exclude 'app.log' \
+            --rsync-path="sudo -n -u ${{ inputs.service_user }} -H /usr/bin/rsync" \
+            ./ \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ inputs.app_dir }}"
+
+      - name: Install deps & restart service (remote)
+        run: |
+          ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" <<'EOF'
+          set -euo pipefail
+          sudo -n -u ${{ inputs.service_user }} -H bash -lc '
+            export PATH=${{ inputs.app_user_root }}.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+            cd ${{ inputs.app_dir }}
+            uv sync --frozen
+          '
+          sudo -n systemctl restart ${{ inputs.service_name }}
+          sudo -n systemctl --no-pager --full status ${{ inputs.service_name }} | sed -n "1,10p"
+          EOF
