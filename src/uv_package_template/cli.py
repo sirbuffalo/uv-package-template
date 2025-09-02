@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import sys
 from os import getenv
+import sys
+
 from dotenv import load_dotenv
-from .setup_logging import configure_logging, get_logger
+
 from .example_app_logic import some_app_logic
+from .setup_logging import configure_logging, get_logger
 
 configure_logging()
 logger = get_logger(__name__)

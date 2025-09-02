@@ -17,11 +17,11 @@ Quickstart
 
 Development
 - Tasks via Poe (installed in dev extras):
+  - All checks (run before push): `uv run poe check`
   - Lint: `uv run poe lint`
   - Format: `uv run poe fmt`
   - Type check: `uv run poe typecheck`
   - Tests: `uv run poe test`
-  - All checks: `uv run poe check`
 - Add dev tools: `uv add --extra dev <tool>` (e.g., `pytest-cov`)
 
 Project Layout

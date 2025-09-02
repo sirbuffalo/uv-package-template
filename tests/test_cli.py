@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import builtins
 import importlib
 import sys
 from types import ModuleType
+from typing import Any, cast
 
 import pytest
+from pytest import MonkeyPatch
 
 
 def reload_cli() -> ModuleType:
@@ -15,19 +16,20 @@ def reload_cli() -> ModuleType:
     return importlib.import_module('uv_package_template.cli')
 
 
-def test_main_exits_when_missing_token(monkeypatch):
+def test_main_exits_when_missing_token(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.delenv('EXAMPLE_TOKEN', raising=False)
     cli = reload_cli()
     # Prevent loading a real .env during this test
-    import uv_package_template.cli as _cli  # type: ignore
-    # Patch the load_dotenv that main() calls to a no-op
-    _cli.load_dotenv = lambda: False  # type: ignore[assignment]
+    def _no_load() -> bool:
+        return False
+
+    monkeypatch.setattr(cast(Any, cli), 'load_dotenv', _no_load)
     with pytest.raises(SystemExit) as ex:
         cli.main()
     assert ex.value.code == 1
 
 
-def test_main_runs_when_token_present(monkeypatch):
+def test_main_runs_when_token_present(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setenv('EXAMPLE_TOKEN', 'abc123')
     cli = reload_cli()
     called: list[str] = []
@@ -35,7 +37,7 @@ def test_main_runs_when_token_present(monkeypatch):
     def _fake_logic(token: str) -> None:
         called.append(token)
 
-    monkeypatch.setattr(cli, 'some_app_logic', _fake_logic)
+    monkeypatch.setattr(cast(Any, cli), 'some_app_logic', _fake_logic)
     # Should not raise
     cli.main()
     assert called == ['abc123']
