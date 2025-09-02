@@ -21,13 +21,12 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/sirbuffalo/uv-package-template"
-Repository = "https://github.com/sirbuffalo/uv-package-template"
-Issues = "https://github.com/sirbuffalo/uv-package-template/issues"
+Homepage = "https://github.com/sirbuffalo/uv_package_template"
+Repository = "https://github.com/sirbuffalo/uv_package_template"
+Issues = "https://github.com/sirbuffalo/uv_package_template/issues"
 
 [project.scripts]
-main = "uv_package_template.cli:main"
-alt = "uv_package_template.cli:alt"
+main = "uv_package_template.__main__:main"
 
 [project.optional-dependencies]
 dev = [
@@ -42,8 +41,23 @@ env = [
 
 [tool.poe.tasks]
 # run these with `uv run poe <task>`
-sync = "uv sync --extra dev --extra env"
-upgrade-deps = "uv sync --upgrade --extra dev --extra env"
+# Run `uv sync` with extras, then editable install of .env loader support 
+sync = { sequence = [
+  { cmd = "uv sync --extra dev --extra env" },
+  { cmd = "uv pip install -e .[env]" },
+] }
+# sync-no-env = { sequence = [
+#   { cmd = "uv sync --extra dev" },
+#   { cmd = "uv pip install -e ." },
+# ] }
+upgrade-deps = { sequence = [
+  { cmd = "uv sync --upgrade --extra dev --extra env" },
+  { cmd = "uv pip install -e .[env]" },
+] }
+# upgrade-deps-no-env = { sequence = [
+#   { cmd = "uv sync --upgrade --extra dev" },
+#   { cmd = "uv pip install -e ." },
+# ] }
 check = { sequence = ["lint", "fmt", "typecheck", "test"] }
 lint = "ruff check ."
 fmt = "ruff format"

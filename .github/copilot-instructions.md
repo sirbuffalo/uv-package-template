@@ -7,7 +7,7 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - Package: `uv_package_template`
 - Tooling: uv (env/pkg), poe (tasks), ruff (lint+fmt), mypy (types), pytest (tests), hatchling (build)
 - CI: GitHub Actions runs ruff + mypy + pytest
-- Entrypoints: `main`, `alt` via `[project.scripts]` (see `src/uv_package_template/cli.py`)
+- Entrypoints: `main` via `[project.scripts]` (see `src/uv_package_template/__main__.py`)
 
 ## How to run locally
 - Setup env (dev tools): `uv sync --extra dev`
@@ -18,7 +18,7 @@ This file guides AI coding assistants working in this repo. Follow these rules t
   - Typecheck: `uv run poe typecheck`
   - Test: `uv run poe test`
   - All checks: `uv run poe check`
-- Example CLI: `uv run main` or `uv run python -m uv_package_template.cli`
+- Example CLI: `uv run main` or `uv run python -m uv_package_template`
 
 ## Style and conventions
 - Formatting: ruff formatter, single quotes, 100 char line length, spaces for indent
@@ -26,7 +26,7 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - Types: prefer explicit return types; `disallow_untyped_defs = true`; keep public APIs typed
 - Logging: use `configure_logging()` and `get_logger()` from `setup_logging.py`; avoid import-time logging setup outside that module
 - Side effects: avoid import-time side effects (no env reads, file I/O, or logging config at import)
-- Env config: runtime-only; CLI optionally loads `.env` if `python-dotenv` is installed; required var example: `EXAMPLE_TOKEN`
+- Env config: runtime-only; `env_vars.load_or_die` optionally loads `.env` if `python-dotenv` is installed; required var example: `EXAMPLE_API_TOKEN`
 - Package layout: keep code in `src/uv_package_template/`; keep tests in `tests/`
 
 ## Testing
@@ -39,8 +39,9 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - Keep `__init__.py` free of side effects
 - Dependency injection over global reads: pass config (e.g., tokens) as function args
 - CLI:
-  - Defer optional `python-dotenv` import; treat absence as no-op
-  - Validate required env; exit non-zero on missing values (see `cli.main`)
+  - Keep orchestration in `src/uv_package_template/__main__.py`
+  - Env handling lives in `env_vars.load_or_die` which defers optional `python-dotenv` import; treat absence as no-op
+  - Validate required env (e.g., `EXAMPLE_API_TOKEN`); exit non-zero on missing values
 - Logging:
   - Use the provided rotating file + console configuration
   - Do not log secrets in real features (the example logs a token for demonstration only)
@@ -63,8 +64,8 @@ This file guides AI coding assistants working in this repo. Follow these rules t
   - Add/modify tests in `tests/`
   - Run `uv run poe check`
 - Extending CLI behavior:
-  - Modify `cli.py` only for orchestration, logging, and env handling
-  - Keep core logic in separate modules (unit-testable)
+  - Modify `__main__.py` only for orchestration and logging
+  - Keep env logic in `env_vars.py` and core logic in separate modules (unit-testable)
 - Adding dependencies:
   - Use `uv add <pkg>` (or `uv add --extra dev <tool>` for dev)
   - Keep optional deps behind feature flags/extras when possible
@@ -79,7 +80,8 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - PR description: what/why, notable decisions, linked issues; include logs or screenshots if CLI output changes
 
 ## File map (high-level)
-- `src/uv_package_template/cli.py`: CLI entrypoints (`main`, `alt`), runtime .env loading, env validation
+- `src/uv_package_template/__main__.py`: CLI entrypoint (`main`) and example orchestration
+- `src/uv_package_template/env_vars.py`: runtime `.env` loading and env validation
 - `src/uv_package_template/example_app_logic.py`: core example logic; no env reads
 - `src/uv_package_template/setup_logging.py`: logging configuration utilities
 - `tests/`: pytest tests; import root is `src/`
