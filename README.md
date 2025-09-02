@@ -1,7 +1,7 @@
 uv-package-template
 
 [![CI](https://github.com/sirbuffalo/uv-package-template/actions/workflows/ci.yml/badge.svg)](https://github.com/sirbuffalo/uv-package-template/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/uv-package-template.svg)](https://pypi.org/project/uv-package-template/)
+
 
 Lightweight template for a Python package
 
