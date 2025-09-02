@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from contextlib import suppress
 from os import getenv
 import sys
-from typing import Callable
 
 from .example_app_logic import some_app_logic
 from .setup_logging import configure_logging, get_logger
@@ -27,19 +28,20 @@ def main() -> None:
     # forcing the dependency on all users while still supporting .env usage.
     global load_dotenv
     if load_dotenv is None:
-        try:  # type: ignore[no-redef]
-            from dotenv import load_dotenv as _load_dotenv  # type: ignore
-            load_dotenv = _load_dotenv  # type: ignore[assignment]
+        try:
+            from dotenv import load_dotenv as _load_dotenv
+            load_dotenv = _load_dotenv
         except Exception:
             # Provide a no-op so callers/tests can rely on the name existing.
-            load_dotenv = lambda: False  # type: ignore[assignment]
+            def _noop_load_dotenv() -> bool:
+                return False
+
+            load_dotenv = _noop_load_dotenv
 
     # Call the loader (real or no-op)
-    try:
-        load_dotenv()  # type: ignore[misc, operator]
-    except Exception:
-        # Loading .env is best-effort; continue if it fails.
-        pass
+    if load_dotenv is not None:
+        with suppress(Exception):
+            load_dotenv()
 
     token = getenv('EXAMPLE_TOKEN')
     if not token:
