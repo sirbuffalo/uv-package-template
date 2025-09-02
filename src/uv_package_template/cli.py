@@ -9,15 +9,15 @@ logger = get_logger(__name__)
 
 
 def main():
-    logger.info("Hello from uv-package-template:main")
+    logger.info("Hello from uv_package_template:main")
     some_app_logic()
 
 
 def alt():
-    logger.info("Hello from uv-package-template:alt")
+    logger.info("Hello from uv_package_template:alt")
 
 
-def vt_test() -> None:
+def test() -> None:
     """Run the project's pytest suite.
 
     This entry point is meant for local dev/CI convenience. It imports pytest at

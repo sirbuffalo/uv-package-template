@@ -1,3 +1,4 @@
+from sys import getenv
 from dotenv import load_dotenv
 
 from .setup_logging import get_logger

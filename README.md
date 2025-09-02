@@ -1,6 +1,10 @@
 General instructions:
-  add any 
 
+  create .venv and pick the venv in vs code after:
+    uv sync
+
+  add any pypi libraries with `uv add`. example:
+    uv add flask
 
 Run:
   uv sync --extra dev
