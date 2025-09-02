@@ -1,6 +1,14 @@
 uv-package-template
 
-Lightweight template for a Python package using uv + hatchling, with Ruff, pytest, and GitHub Actions.
+Lightweight template for a Python package
+
+Uses:
+ - uv for environment management
+ - poe scripts for dev task management
+ - Ruff for linting and formattting
+ - mypy for type checking
+ - pytest for testing
+ - GitHub Actions for CI/CD.
 
 Requirements
 - uv installed (https://docs.astral.sh/uv/)
