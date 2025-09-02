@@ -43,15 +43,16 @@ jobs:
         run: uv run pytest -q
 
   # Deploy is implemented as a reusable workflow so it can depend on lint-and-test via `needs`.
-  deploy:
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
-    needs: lint-and-test
-    uses: ./.github/workflows/deploy.yml
-    # Provide inputs to override defaults if desired.
-    # with:
-    #   service_user: "uv-package-template"
-    #   service_name: "uv-package-template"
-    #   app_user_root: "/opt/uv-package-template"
-    #   app_dir: "uv-package-template/uv-package-template"
-    #   concurrency_group: "uv-package-template-prod"
-    secrets: inherit
+  # Needs DEPLOY_SSH_KEY, DEPLOY_USER, DEPLOY_HOST set in github actions secrets.
+  # deploy:
+  #   if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
+  #   needs: lint-and-test
+  #   uses: ./.github/workflows/deploy.yml
+  #   # Provide inputs to override defaults if desired.
+  #   # with:
+  #   #   service_user: "uv-package-template"
+  #   #   service_name: "uv-package-template"
+  #   #   app_user_root: "/opt/uv-package-template"
+  #   #   app_dir: "uv-package-template/uv-package-template"
+  #   #   concurrency_group: "uv-package-template-prod"
+  #   secrets: inherit

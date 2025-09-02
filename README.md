@@ -49,8 +49,6 @@ Using This as a Template
 - Add a license file (e.g., `LICENSE`) and optionally `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`
 
 Notes and Suggestions
-- Env side effects: the template loads env and validates in the CLI at runtime (not on import) to avoid side effects for library users.
 - Logging defaults: the console log level defaults to INFO; align docstrings and levels as desired.
-- Tests: add at least one smoke test for the CLI and any core logic.
 - CI: `.github/workflows/ci.yml` runs uv + ruff + mypy + pytest on pushes/PRs; tweak Python versions or matrix as needed.
-- Deployment: see `README-deploy.md` if you plan to rsync to a server and restart a systemd unit.
+- Deployment: see `README-deploy.md` if you plan to rsync to a server and restart a systemd unit. Otherwise you can delete that file.
