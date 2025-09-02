@@ -8,17 +8,24 @@ dependencies = [
   "python-dotenv>=1.0.1",
 ]
 
-
 [project.scripts]
 main = "uv_package_template.cli:main"
 alt = "uv_package_template.cli:alt"
-test = "uv_package_template.cli:test"
 
 [project.optional-dependencies]
 dev = [
   "ruff>=0.12.10",
   "pytest>=8.3.2",
+  "mypy>=1.10.0",
+  "poethepoet>=0.26.1",
 ]
+
+[tool.poe.tasks]
+lint = "ruff check ."
+fmt = "ruff format"
+typecheck = "mypy --sqlite-cache --pretty src tests"
+test = "pytest -q"
+check = { sequence = ["lint", "typecheck", "test"] }
 
 [build-system]
 requires = ["hatchling>=1.25.0"]
@@ -47,3 +54,14 @@ indent-style = "space"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+no_implicit_optional = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+pretty = true

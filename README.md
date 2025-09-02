@@ -8,7 +8,7 @@ Requirements
 
 Quickstart
 - Create environment and install dev extras: `uv sync --extra dev`
-- Run the example CLI:
+- Run the example CLI entry points:
   - `uv run main` (logs a message and runs example logic)
   - `uv run alt`
   - Or directly: `uv run python -m uv_package_template.cli`
@@ -16,14 +16,18 @@ Quickstart
 - Add dependencies: `uv add <package>` (example: `uv add flask`)
 
 Development
-- Lint: `uv run ruff check .`
-- Format: `uv run ruff format`
-- Tests: `uv run pytest -q` or `uv run test`
-- Add dev tools: `uv add --extra dev <tool>` (e.g., `mypy`, `pytest-cov`)
+- Tasks via Poe (installed in dev extras):
+  - Lint: `uv run poe lint`
+  - Format: `uv run poe fmt`
+  - Type check: `uv run poe typecheck`
+  - Tests: `uv run poe test`
+  - All checks: `uv run poe check`
+- Add dev tools: `uv add --extra dev <tool>` (e.g., `pytest-cov`)
 
 Project Layout
-- `pyproject.toml`: project metadata, scripts, dev extras, ruff/pytest config
-- `src/uv_package_template/cli.py`: console entry points (`main`, `alt`, `test`)
+- `pyproject.toml`: project metadata, scripts, dev extras, ruff/pytest/mypy config, Poe tasks
+- `src/uv_package_template/cli.py`: console entry points (`main`, `alt`)
+  - Note: dev commands like lint/test now live under Poe tasks, not console scripts
 - `src/uv_package_template/example_app_logic.py`: example logic using `.env`
 - `src/uv_package_template/setup_logging.py`: basic rotating file + console logging
 - `src/uv_package_template/__init__.py`: version metadata without side effects
@@ -45,8 +49,8 @@ Using This as a Template
 - Add a license file (e.g., `LICENSE`) and optionally `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`
 
 Notes and Suggestions
-- Env side effects: consider moving `load_dotenv()` and env validation from module import time into your CLI `main()` to avoid import-time exits for library users.
+- Env side effects: the template loads env and validates in the CLI at runtime (not on import) to avoid side effects for library users.
 - Logging defaults: the console log level defaults to INFO; align docstrings and levels as desired.
 - Tests: add at least one smoke test for the CLI and any core logic.
-- CI: `.github/workflows/ci.yml` runs uv + ruff + pytest on pushes/PRs; tweak Python versions or matrix as needed.
+- CI: `.github/workflows/ci.yml` runs uv + ruff + mypy + pytest on pushes/PRs; tweak Python versions or matrix as needed.
 - Deployment: see `README-deploy.md` if you plan to rsync to a server and restart a systemd unit.

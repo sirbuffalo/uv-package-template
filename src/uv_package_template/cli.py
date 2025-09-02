@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sys
+from os import getenv
+from dotenv import load_dotenv
 from .setup_logging import configure_logging, get_logger
 from .example_app_logic import some_app_logic
 
@@ -8,34 +10,25 @@ configure_logging()
 logger = get_logger(__name__)
 
 
-def main():
-    logger.info('Hello from uv_package_template:main')
-    some_app_logic()
+def main() -> None:
+    """CLI entrypoint.
 
-
-def alt():
-    logger.info('Hello from uv_package_template:alt')
-
-
-def test() -> None:
-    """Run the project's pytest suite.
-
-    This entry point is meant for local dev/CI convenience. It imports pytest at
-    runtime so production installs don't need to depend on pytest. If pytest
-    isn't available, provide a friendly hint to install dev extras.
+    Loads environment at runtime and validates required settings, avoiding
+    import-time side effects for library users.
     """
-    try:
-        import pytest  # type: ignore
-    except Exception:  # pragma: no cover - simple import guard
-        logger.error(
-            'pytest is not installed. Install dev deps with:\n'
-            '  uv sync --extra dev\n'
-            'or run tests directly via: uv run pytest'
-        )
+    logger.info('Hello from uv_package_template:main')
+    load_dotenv()
+
+    token = getenv('EXAMPLE_TOKEN')
+    if not token:
+        logger.error('Missing EXAMPLE_TOKEN')
         sys.exit(1)
 
-    # Delegate to pytest's console entry; it will use sys.argv.
-    sys.exit(pytest.console_main())
+    some_app_logic(token)
+
+
+def alt() -> None:
+    logger.info('Hello from uv_package_template:alt')
 
 
 if __name__ == '__main__':

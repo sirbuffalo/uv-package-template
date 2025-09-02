@@ -28,6 +28,17 @@ jobs:
       - name: Lint (ruff)
         run: uv run ruff check .
 
+      - name: Cache mypy cache
+        uses: actions/cache@v4
+        with:
+          path: .mypy_cache
+          key: mypy-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            mypy-${{ runner.os }}-
+
+      - name: Type check (mypy)
+        run: uv run mypy --sqlite-cache --pretty src tests
+
       - name: Test (pytest)
         run: uv run pytest -q
 
