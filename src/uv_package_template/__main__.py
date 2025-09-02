@@ -5,6 +5,7 @@ from logging import Logger
 from .env_vars import load_or_die
 from .example_app_logic import some_app_logic
 from .setup_logging import configure_logging, get_logger
+
 logger: Logger = get_logger(__name__)
 
 
