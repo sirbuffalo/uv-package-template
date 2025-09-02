@@ -1,13 +1,52 @@
-General instructions:
+uv-package-template
 
-  create .venv and pick the venv in vs code after:
-    uv sync
+Lightweight template for a Python package using uv + hatchling, with Ruff, pytest, and GitHub Actions.
 
-  add any pypi libraries with `uv add`. example:
-    uv add flask
+Requirements
+- uv installed (https://docs.astral.sh/uv/)
+- Python 3.13 (configured in CI; adjust as needed)
 
-Run:
-  uv sync --extra dev
-To get ruff and pytest install for CI and testing.
+Quickstart
+- Create environment and install dev extras: `uv sync --extra dev`
+- Run the example CLI:
+  - `uv run main` (logs a message and runs example logic)
+  - `uv run alt`
+  - Or directly: `uv run python -m uv_package_template.cli`
+- Configure env (optional example): create a `.env` with `EXAMPLE_TOKEN=...` so the example logic can run.
+- Add dependencies: `uv add <package>` (example: `uv add flask`)
 
-See README-deploy.md if configuring continuous deployment
+Development
+- Lint: `uv run ruff check .`
+- Format: `uv run ruff format`
+- Tests: `uv run pytest -q` or `uv run test`
+- Add dev tools: `uv add --extra dev <tool>` (e.g., `mypy`, `pytest-cov`)
+
+Project Layout
+- `pyproject.toml`: project metadata, scripts, dev extras, ruff/pytest config
+- `src/uv_package_template/cli.py`: console entry points (`main`, `alt`, `test`)
+- `src/uv_package_template/example_app_logic.py`: example logic using `.env`
+- `src/uv_package_template/setup_logging.py`: basic rotating file + console logging
+- `src/uv_package_template/__init__.py`: version metadata without side effects
+- `tests/`: place tests here (configured via `tool.pytest.ini_options`)
+- `.github/workflows/`: CI (lint + tests) and optional reusable deploy workflow
+- `README-deploy.md`: optional server deployment guide
+
+Packaging and Publish
+- Build: `uv build` (uses hatchling)
+- Publish: `uv publish` (configure PyPI credentials as needed)
+
+Using This as a Template
+- Rename the distribution and module:
+  - In `pyproject.toml [project] name` (distribution name)
+  - In `src/<your_package_name>/...` (module/package name)
+  - Adjust console scripts in `[project.scripts]` to a single, descriptive name
+- Update metadata: description, license, authors, classifiers, URLs
+- Decide supported Python versions and set `requires-python` accordingly
+- Add a license file (e.g., `LICENSE`) and optionally `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`
+
+Notes and Suggestions
+- Env side effects: consider moving `load_dotenv()` and env validation from module import time into your CLI `main()` to avoid import-time exits for library users.
+- Logging defaults: the console log level defaults to INFO; align docstrings and levels as desired.
+- Tests: add at least one smoke test for the CLI and any core logic.
+- CI: `.github/workflows/ci.yml` runs uv + ruff + pytest on pushes/PRs; tweak Python versions or matrix as needed.
+- Deployment: see `README-deploy.md` if you plan to rsync to a server and restart a systemd unit.

@@ -9,12 +9,12 @@ logger = get_logger(__name__)
 
 
 def main():
-    logger.info("Hello from uv_package_template:main")
+    logger.info('Hello from uv_package_template:main')
     some_app_logic()
 
 
 def alt():
-    logger.info("Hello from uv_package_template:alt")
+    logger.info('Hello from uv_package_template:alt')
 
 
 def test() -> None:
@@ -29,7 +29,7 @@ def test() -> None:
     except Exception:  # pragma: no cover - simple import guard
         logger.error(
             'pytest is not installed. Install dev deps with:\n'
-            "  uv sync --extra dev\n"
+            '  uv sync --extra dev\n'
             'or run tests directly via: uv run pytest'
         )
         sys.exit(1)
@@ -38,5 +38,5 @@ def test() -> None:
     sys.exit(pytest.console_main())
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
