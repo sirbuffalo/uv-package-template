@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from logging import Logger
+
 from .setup_logging import get_logger
 
-logger = get_logger(__name__)
+logger: Logger = get_logger(__name__)
 
 
 def some_app_logic(token: str) -> None:

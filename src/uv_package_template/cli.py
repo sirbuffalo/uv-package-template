@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from contextlib import suppress
+from logging import Logger
 from os import getenv
 import sys
 
@@ -9,7 +10,7 @@ from .example_app_logic import some_app_logic
 from .setup_logging import configure_logging, get_logger
 
 configure_logging()
-logger = get_logger(__name__)
+logger: Logger = get_logger(__name__)
 
 # Optional runtime dependency: python-dotenv.
 # Keep a module-level reference so tests can monkeypatch `load_dotenv`.
