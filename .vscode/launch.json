@@ -13,7 +13,7 @@
       "name": "Run Main",
       "type": "debugpy",
       "request": "launch",
-      "module": "cli.main",
+      "module": "uv_package_template.cli",
       "cwd": "${workspaceFolder}",
       "envFile": "${workspaceFolder}/.env",
       "console": "integratedTerminal",
@@ -24,7 +24,7 @@
       "type": "debugpy",
       "request": "launch",
       "name": "Run Main (runs without local install via PYTHONPATH)",
-      "module": "cli.main",
+      "module": "uv_package_template.cli",
       "cwd": "${workspaceFolder}",
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src"

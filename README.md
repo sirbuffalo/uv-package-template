@@ -14,22 +14,55 @@ Uses:
  - GitHub Actions for CI/CD.
 
 Requirements
-- uv installed (https://docs.astral.sh/uv/)
-- Python 3.13 (configured in CI; adjust as needed)
+- uv installed: `curl -LsSf https://astral.sh/uv/install.sh | sh` or `uv self update`
+- Python 3.13 (configured in CI and pyproject.toml ruff settings; adjust as needed, perhaps `uv python install 3.13`)
+
+Converting a template repo to a new name:
+- Run the following shell commands in the project root:
+```bash
+NEWPACKAGENAME=new-name # replace  (use hyphens)
+NEWMODULENAME=new_name # replace (use underscores)
+[ -d src/uv_package_template ] && mv src/uv_package_template src/$NEWMODULENAME
+```
+```bash
+LC_ALL=C find . \
+  \( -path './.git' -o -path './.venv' -o -path './.mypy_cache' -o -path './.ruff_cache' -o -path './.pytest_cache' -o -path './dist' -o -path './build' \) -prune -o \
+  -type f -exec sh -c '
+    for f do
+      if grep -Iq "uv[_-]package[_-]template" "$f"; then
+        sed -i "" \
+          -e "s/uv_package_template/$NEWPACKAGENAME/g" \
+          -e "s/uv-package-template/$NEWMODULENAME/g" "$f"
+      fi
+    done
+  ' sh {} +
+```
+```bash
+LC_ALL=C grep -RIn "uv[_-]package[_-]template" . || echo "All set"
+```
+```bash
+# From the repo root
+rm -rf .venv
+uv sync --all-extras
+uv pip install -e .
+```
 
 Quickstart
-- Create environment and install dev extras: `uv sync --extra dev`
-- Optional: enable `.env` loading by installing the `env` extra: `uv sync --extra env`
+- `uv sync --all-extras` (Create environment and install dev extras.)
+- Point VSCode Venv to ./venv/bin/ 
 - Run the example CLI entry points:
   - `uv run main` (logs a message and runs example logic)
   - `uv run alt`
-  - Or directly: `uv run python -m uv_package_template.cli`
+  - Or directly: `uv run python -m language.cli`
 - Configure env (optional example): create a `.env` with `EXAMPLE_TOKEN=...` so the example logic can run. If you installed the `env` extra, it will be loaded automatically by the CLI.
+To disable `.env` loading install just: `uv sync --extra dev`
 - Add dependencies: `uv add <package>` (example: `uv add flask`)
 
 Development
 - Tasks via Poe (installed in dev extras):
-  - All checks (run before push): `uv run poe check`
+  - Sync dependencies: `uv run poe sync`
+  - Sync and upgrade dependencies: `uv run poe upgrade-deps`
+  - All checks / format (run before push): `uv run poe check`
   - Lint: `uv run poe lint`
   - Format: `uv run poe fmt`
   - Type check: `uv run poe typecheck`

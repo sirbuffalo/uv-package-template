@@ -2,7 +2,9 @@
 name = "uv-package-template"
 version = "0.1.0"
 description = "Template for UV package"
-authors = [{ name = "Davis McDowell", email = "78391846+sirbuffalo@users.noreply.github.com" }]
+authors = [
+  { name = "Davis McDowell", email = "78391846+sirbuffalo@users.noreply.github.com" },
+]
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []
@@ -39,11 +41,14 @@ env = [
 ]
 
 [tool.poe.tasks]
+# run these with `uv run poe <task>`
+sync = "uv sync --extra dev --extra env"
+upgrade-deps = "uv sync --upgrade --extra dev --extra env"
+check = { sequence = ["lint", "fmt", "typecheck", "test"] }
 lint = "ruff check ."
 fmt = "ruff format"
 typecheck = "mypy --sqlite-cache --pretty src tests"
 test = "pytest -q"
-check = { sequence = ["lint", "typecheck", "test"] }
 
 [build-system]
 requires = ["hatchling>=1.25.0"]
