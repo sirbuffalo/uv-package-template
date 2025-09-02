@@ -39,28 +39,23 @@ env = [
   "python-dotenv>=1.0.1",
 ]
 
+[tool.uv]
+package = true
+
+[tool.poe.executor]
+type = "uv"
+
 [tool.poe.tasks]
-# run these with `uv run poe <task>`
+# run these with `poe <task>`
 # Run `uv sync` with extras, then editable install of .env loader support 
-sync = { sequence = [
-  { cmd = "uv sync --extra dev --extra env" },
-  { cmd = "uv pip install -e .[env]" },
-] }
-# sync-no-env = { sequence = [
-#   { cmd = "uv sync --extra dev" },
-#   { cmd = "uv pip install -e ." },
-# ] }
-upgrade-deps = { sequence = [
-  { cmd = "uv sync --upgrade --extra dev --extra env" },
-  { cmd = "uv pip install -e .[env]" },
-] }
-# upgrade-deps-no-env = { sequence = [
-#   { cmd = "uv sync --upgrade --extra dev" },
-#   { cmd = "uv pip install -e ." },
-# ] }
+sync = { cmd = "uv sync --project . --extra dev --extra env" }
+upgrade-deps = { cmd = "uv sync --project . --upgrade --extra dev --extra env" }
+# Run the package without requiring an install; avoids `uv run` pruning
+# the editable install on sync, by importing directly from `src`.
+run = { cmd = "python -m language", env = { PYTHONPATH = "src" } }
 check = { sequence = ["lint", "fmt", "typecheck", "test"] }
 lint = "ruff check ."
-fmt = "ruff format"
+fmt = "ruff format ."
 typecheck = "mypy --sqlite-cache --pretty src tests"
 test = "pytest -q"
 
