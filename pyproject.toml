@@ -52,6 +52,17 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/uv_package_template"]
 
+[tool.hatch.build.targets.sdist]
+exclude = [
+  ".github",
+  ".vscode",
+  ".ruff_cache",
+  ".mypy_cache",
+  ".pytest_cache",
+  "app.log",
+  ".env",
+]
+
 [tool.ruff]
 target-version = "py313"
 line-length = 100

@@ -1,5 +1,8 @@
 uv-package-template
 
+[![CI](https://github.com/sirbuffalo/uv-package-template/actions/workflows/ci.yml/badge.svg)](https://github.com/sirbuffalo/uv-package-template/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/uv-package-template.svg)](https://pypi.org/project/uv-package-template/)
+
 Lightweight template for a Python package
 
 Uses:
@@ -21,7 +24,7 @@ Quickstart
   - `uv run main` (logs a message and runs example logic)
   - `uv run alt`
   - Or directly: `uv run python -m uv_package_template.cli`
-- Configure env (optional example): create a `.env` with `EXAMPLE_TOKEN=...` so the example logic can run. If you installed the `env` extra, it will be loaded automatically.
+- Configure env (optional example): create a `.env` with `EXAMPLE_TOKEN=...` so the example logic can run. If you installed the `env` extra, it will be loaded automatically by the CLI.
 - Add dependencies: `uv add <package>` (example: `uv add flask`)
 
 Development
