@@ -11,7 +11,7 @@ Uses:
  - Ruff for linting and formattting
  - mypy for type checking
  - pytest for testing
- - GitHub Actions for CI/CD.
+ - GitHub Actions for CI/CD
 
 Requirements
 - uv installed: `curl -LsSf https://astral.sh/uv/install.sh | sh` or `uv self update`
