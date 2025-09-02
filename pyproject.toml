@@ -1,12 +1,32 @@
 [project]
+authors = [
+  {
+    name = "Davis McDowell",
+    email = "78391846+sirbuffalo@users.noreply.github.com",
+  },
+]
 name = "uv-package-template"
 version = "0.1.0"
 description = "Template for UV package"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-  "python-dotenv>=1.0.1",
+dependencies = []
+license = { file = "LICENSE" }
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Typing :: Typed",
+  # Blocks publishing to PyPI - remove before `uv publish`
+  "Private :: Do Not Upload",
 ]
+
+[project.urls]
+Homepage = "https://github.com/sirbuffalo/uv-package-template"
+Repository = "https://github.com/sirbuffalo/uv-package-template"
+Issues = "https://github.com/sirbuffalo/uv-package-template/issues"
 
 [project.scripts]
 main = "uv_package_template.cli:main"
@@ -18,6 +38,9 @@ dev = [
   "pytest>=8.3.2",
   "mypy>=1.10.0",
   "poethepoet>=0.26.1",
+]
+env = [
+  "python-dotenv>=1.0.1",
 ]
 
 [tool.poe.tasks]

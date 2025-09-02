@@ -10,7 +10,8 @@ from importlib.metadata import PackageNotFoundError, version
 
 # Expose package version without importing submodules with side effects.
 try:  # pragma: no cover - trivial
-    __version__ = version('uv_package_template')
+    # Use the distribution name (normalized with hyphens)
+    __version__ = version('uv-package-template')
 except PackageNotFoundError:  # local editable or direct source usage
     __version__ = '0'
 

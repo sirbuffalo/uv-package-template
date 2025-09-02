@@ -16,11 +16,12 @@ Requirements
 
 Quickstart
 - Create environment and install dev extras: `uv sync --extra dev`
+- Optional: enable `.env` loading by installing the `env` extra: `uv sync --extra env`
 - Run the example CLI entry points:
   - `uv run main` (logs a message and runs example logic)
   - `uv run alt`
   - Or directly: `uv run python -m uv_package_template.cli`
-- Configure env (optional example): create a `.env` with `EXAMPLE_TOKEN=...` so the example logic can run.
+- Configure env (optional example): create a `.env` with `EXAMPLE_TOKEN=...` so the example logic can run. If you installed the `env` extra, it will be loaded automatically.
 - Add dependencies: `uv add <package>` (example: `uv add flask`)
 
 Development

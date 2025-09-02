@@ -17,7 +17,7 @@ def configure_logging(
     """Configure root logger with file + console handlers.
 
     - File: DEBUG level, rotating to keep size bounded.
-    - Console (stderr): INFO+ as default.
+    - Console (stderr): INFO by default; override via ``console_level``.
     """
     file_handler = RotatingFileHandler(
         log_file,
