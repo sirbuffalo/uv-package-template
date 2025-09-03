@@ -57,7 +57,7 @@ LC_ALL=C grep -RIn "uv[_-]package[_-]template" . || echo "All set"
 ```bash
 # From the repo root
 rm -rf .venv
-uv sync --group dev --extra env
+uv sync --group dev
 ```
 
 ```bash
