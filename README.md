@@ -1,6 +1,6 @@
 # UV-Package-Template
 
-[![CI](https://github.com/sirbuffalo/uv_package_template/actions/workflows/ci.yml/badge.svg)](https://github.com/sirbuffalo/uv_package_template/actions/workflows/ci.yml)
+[![CI](https://github.com/sirbuffalo/uv-package-template/actions/workflows/ci.yml/badge.svg)](https://github.com/sirbuffalo/uv-package-template/actions/workflows/ci.yml)
 
 A template for building uv-based Python packages.
 
