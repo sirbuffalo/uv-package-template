@@ -1,0 +1,6 @@
+
+# Load environment variables from .env if present
+dotenv_if_exists
+
+# Add local bin directory to PATH (for poe)
+PATH_add bin

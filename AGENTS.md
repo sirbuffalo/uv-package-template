@@ -9,13 +9,13 @@
 
 ## Build, Test, and Dev Commands
 
-- Setup dev env: `uv sync --extra dev` (installs dev tools).
-- Lint: `uv run poe lint` (ruff check).
-- Format: `uv run poe fmt` (ruff format).
-- Type check: `uv run poe typecheck` (mypy with cache).
-- Test: `uv run poe test` (pytest, quiet).
-- All checks: `uv run poe check` (lint → typecheck → test). Run before pushing.
-- Run CLI: `uv run main` (or `uv run python -m uv_package_template`).
+- Setup dev env: `uv sync` (installs dev tools).
+- Lint: `poe lint` (ruff check).
+- Format: `poe fmt` (ruff format).
+- Type check: `poe typecheck` (mypy with cache).
+- Test: `poe test` (pytest, quiet).
+- All checks: `poe check` (lint → typecheck → test). Run before pushing.
+- Run CLI: `poe run` (or without poe: `uv run main` or `uv run python -m uv_package_template`.)
 - Build: `uv build` (hatchling). Publish: `uv publish`.
 
 ## Coding Style & Naming
@@ -30,12 +30,12 @@
 - Framework: pytest. Test paths: `tests/`. Import root: `src/`.
 - Name tests `test_*.py`; use fixtures like `monkeypatch`/`caplog` (see existing tests).
 - Avoid import‑time side effects; configure env/logging at runtime (done in `__main__.py`).
-- Run locally: `uv run poe test`. Add focused tests for new behaviors.
+- Run locally: `poe test`. Add focused tests for new behaviors.
 
 ## Commit & Pull Requests
 
 - Commit style: imperative, concise, present tense (e.g., "Add ruff config", "Fix CLI exit"). Group related changes.
-- Before PR: `uv run poe check` must pass; update docs as needed.
+- Before PR: `poe check` must pass; update docs as needed.
 - PR description: what/why, notable decisions, linked issues (e.g., `Closes #123`). Include logs/screenshots for CLI output changes.
 
 ## Security & Configuration

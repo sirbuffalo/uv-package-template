@@ -31,7 +31,7 @@ jobs:
             venv-${{ runner.os }}-${{ env.PYTHON_VERSION }}-
 
       - name: Install dependencies (locked)
-        run: uv sync --frozen --extra dev
+        run: uv sync --frozen
 
       - name: Lint (ruff)
         run: uv run ruff check .
@@ -45,7 +45,7 @@ jobs:
             mypy-${{ runner.os }}-
 
       - name: Type check (mypy)
-        run: uv run mypy --sqlite-cache --pretty src tests
+        run: uv run mypy src tests
 
       - name: Test (pytest)
         run: uv run pytest -q

@@ -8,14 +8,6 @@ def test_env_logic_exits_when_missing_token(monkeypatch: MonkeyPatch) -> None:
     # Ensure the expected var is absent
     monkeypatch.delenv('EXAMPLE_API_TOKEN', raising=False)
 
-    # Avoid loading a real .env file
-    import uv_package_template.env_vars as env_vars
-
-    def _no_load() -> bool:  # matches signature used by load_or_die
-        return False
-
-    monkeypatch.setattr(env_vars, 'load_dotenv', _no_load)
-
     # Call the new helper that encapsulates the former `alt` logic
     import uv_package_template.__main__ as main_mod
 

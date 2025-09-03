@@ -1,0 +1,46 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      
+      # --- Fast checks on commit ---
+
+      - id: ruff-lint
+        name: Ruff (lint)
+        entry: uv run ruff check
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: true
+        args: [--fix]
+
+      - id: ruff-format
+        name: Ruff (format)
+        entry: uv run ruff format
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: true
+
+      - id: mypy
+        name: mypy (files)
+        entry: uv run mypy
+        language: system
+        pass_filenames: false
+        args: [src]
+        stages: [pre-commit]
+
+      # --- Full tests on push ---
+
+      - id: mypy-tests
+        name: mypy (pre-push)
+        entry: uv run mypy
+        language: system
+        pass_filenames: false
+        args: [src, tests]
+        stages: [pre-push]
+
+      - id: pytest
+        name: pytest (pre-push)
+        entry: uv run pytest -q
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

@@ -17,7 +17,7 @@ A template for building uv-based Python packages.
 
 - uv installed: `curl -LsSf https://astral.sh/uv/install.sh | sh` or `uv self update`
 - Python 3.13 (configured in CI and pyproject.toml ruff settings; adjust as needed, perhaps `uv python install 3.13`)
-- May require configuring environmental vars, either directly, or via a private `.env` file in the root. For example, create a `EXAMPLE_API_TOKEN=any_value_here` so the example logic can run. If you installed the `env` extra (see below), `.env` will be loaded programatically. To disable automated `.env` loading, install only dev tools: `uv sync --extra dev`.
+- Environmental vars. Recommend https://direnv.net/ plus `.env` setup below.
 
 ## Using this repo as a Template
 
@@ -57,36 +57,47 @@ LC_ALL=C grep -RIn "uv[_-]package[_-]template" . || echo "All set"
 ```bash
 # From the repo root
 rm -rf .venv
-uv sync --all-extras
-uv pip install -e '.[env]'
+uv sync --group dev --extra env
+```
+
+```bash
+# If using direnv
+cp .env.example .env      # updating as needed
+cp .envrc.sample .envrc   # updating as needed
+direnv allow .
 ```
 
 ## Quickstart
 
-- `uv sync --extra dev --extra env && uv pip install -e '.[env]'` (one-time bootstrap)
-- `uv run poe sync` (Create environment, install dev + env extras, editable install.)
-- Run the CLI entry point:
-  - `uv run main` (logs a message and runs example logic)
-  - Or directly: `uv run python -m uv_package_template`
+Dev machine:
+
+- `poe sync` (Create dev environment)
+- `poe run` (logs a message and runs example logic)
+
+Production (no dev tools):
+
+- `uv sync --no-default-groups` (no dev tools)
+- `uv run main` (`poe run` without poe)
 
 ## Development
 
 ### Commands
 
-- Dev commands are task run with Poe (which is installed with dev extras):
-  - Sync dependencies: `uv run poe sync`
-  - Sync and upgrade dependencies: `uv run poe upgrade-deps`
-  - All checks / format (run before push): `uv run poe check`
-  - Lint: `uv run poe lint`
-  - Format: `uv run poe fmt`
-  - Type check: `uv run poe typecheck`
-  - Tests: `uv run poe test`
+- Dev commands are task run with Poe (installed with the dev group):
+  - Sync dependencies: `poe sync`
+  - Sync and upgrade dependencies: `poe upgrade`
+  - Basic checks: `poe fast`
+  - Full checks: `poe full`
+  - Lint: `poe lint`
+  - Format: `poe fmt`
+  - Type check: `poe typecheck`
+  - Tests: `poe test`
 - Add dependencies: `uv add <package>` (example: `uv add flask`)
-- Add dev tools: `uv add --extra dev <tool>` (e.g., `pytest-cov`)
+- Add dev tools: `uv add --group dev <tool>` (e.g., `pytest-cov`)
 
 ### Package Layout
 
-- `pyproject.toml`: project metadata, scripts, dev extras, ruff/pytest/mypy config, Poe tasks
+- `pyproject.toml`: project metadata, scripts, dev dependency group, ruff/pytest/mypy config, Poe tasks
 - `src/uv_package_template/__main__.py`: CLI entry point (`main`) and helper `_example_logic_with_env_var()`
 - `src/uv_package_template/__init__.py`: version metadata without side effects
 - `src/uv_package_template/env_vars.py`: environment loading helper used by the CLI

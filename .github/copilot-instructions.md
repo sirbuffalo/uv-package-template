@@ -10,15 +10,14 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - Entrypoints: `main` via `[project.scripts]` (see `src/uv_package_template/__main__.py`)
 
 ## How to run locally
-- Setup env (dev tools): `uv sync --extra dev`
-- Optional .env support: `uv sync --extra env`
+- Setup env (dev tools): `uv sync`
 - Dev tasks (via Poe; see `pyproject.toml`):
-  - Lint: `uv run poe lint`
-  - Format: `uv run poe fmt`
-  - Typecheck: `uv run poe typecheck`
-  - Test: `uv run poe test`
-  - All checks: `uv run poe check`
-- Example CLI: `uv run main` or `uv run python -m uv_package_template`
+  - Lint: `poe lint`
+  - Format: `poe fmt`
+  - Typecheck: `poe typecheck`
+  - Test: `poe test`
+  - All checks: `poe check`
+- Example run: `poe run` (or without poe: `uv run main` or `uv run python -m uv_package_template`)
 
 ## Style and conventions
 - Formatting: ruff formatter, single quotes, 100 char line length, spaces for indent
@@ -26,14 +25,14 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - Types: prefer explicit return types; `disallow_untyped_defs = true`; keep public APIs typed
 - Logging: use `configure_logging()` and `get_logger()` from `setup_logging.py`; avoid import-time logging setup outside that module
 - Side effects: avoid import-time side effects (no env reads, file I/O, or logging config at import)
-- Env config: runtime-only; `env_vars.load_or_die` optionally loads `.env` if `python-dotenv` is installed; required var example: `EXAMPLE_API_TOKEN`
+- Env config: `env_vars.load_or_die`; required var example: `EXAMPLE_API_TOKEN`
 - Package layout: keep code in `src/uv_package_template/`; keep tests in `tests/`
 
 ## Testing
 - Framework: pytest; root import path includes `src/`
 - Write focused tests for new behavior; mirror module names when practical
 - Use fixtures as in existing tests: `monkeypatch`, `caplog`
-- Ensure `uv run poe check` passes before proposing changes
+- Ensure `poe check` passes before proposing changes
 
 ## Architecture notes (apply when implementing features)
 - Keep `__init__.py` free of side effects
@@ -62,12 +61,12 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - Adding a function:
   - Place under `src/uv_package_template/` with types and docstring
   - Add/modify tests in `tests/`
-  - Run `uv run poe check`
+  - Run `poe check`
 - Extending CLI behavior:
   - Modify `__main__.py` only for orchestration and logging
   - Keep env logic in `env_vars.py` and core logic in separate modules (unit-testable)
 - Adding dependencies:
-  - Use `uv add <pkg>` (or `uv add --extra dev <tool>` for dev)
+  - Use `uv add <pkg>` (or `uv add --dev <tool>` for dev)
   - Keep optional deps behind feature flags/extras when possible
 
 ## Build & publish
@@ -76,7 +75,7 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 
 ## Commit and PR guidance
 - Commits: imperative, concise (e.g., "Add ruff config", "Fix CLI exit")
-- Before PR: run `uv run poe check`; update docs if behavior changes
+- Before PR: run `poe check`; update docs if behavior changes
 - PR description: what/why, notable decisions, linked issues; include logs or screenshots if CLI output changes
 
 ## File map (high-level)

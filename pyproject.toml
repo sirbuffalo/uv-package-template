@@ -26,37 +26,44 @@ Repository = "https://github.com/sirbuffalo/uv_package_template"
 Issues = "https://github.com/sirbuffalo/uv_package_template/issues"
 
 [project.scripts]
+# uv run main (should be equivalent to `poe run`)
 main = "uv_package_template.__main__:main"
 
-[project.optional-dependencies]
+# if used, add --all-extras or --extra dev to `uv sync`
+# [project.optional-dependencies]
+# env = [
+#   # "python-dotenv>=1.0.1", 
+# ]
+
+[tool.uv]
+package = true
+default-groups = ["dev"]
+
+[dependency-groups]
 dev = [
   "ruff>=0.12.10",
   "pytest>=8.3.2",
   "mypy>=1.10.0",
   "poethepoet>=0.26.1",
+  "pre-commit>=4.3.0",
 ]
-env = [
-  "python-dotenv>=1.0.1",
-]
-
-[tool.uv]
-package = true
 
 [tool.poe.executor]
 type = "uv"
 
 [tool.poe.tasks]
 # run these with `poe <task>`
-# Run `uv sync` with extras, then editable install of .env loader support 
-sync = { cmd = "uv sync --project . --extra dev --extra env" }
-upgrade-deps = { cmd = "uv sync --project . --upgrade --extra dev --extra env" }
-# Run the package without requiring an install; avoids `uv run` pruning
-# the editable install on sync, by importing directly from `src`.
-run = { cmd = "python -m language", env = { PYTHONPATH = "src" } }
-check = { sequence = ["lint", "fmt", "typecheck", "test"] }
-lint = "ruff check ."
+sync = { cmd = "uv sync --project ." }    # Create env with dev group
+upgrade = { cmd = "uv sync --project . --upgrade" }
+# Sometimes `poe run` works when `uv run main` doesn't
+run = { cmd = "python -m uv_package_template", env = { PYTHONPATH = "src" } }
+fast = { sequence = ["lint", "fmt", "typecheck"] }
+full = { sequence = ["lint", "fmt", "typecheck-full", "test"] }
+hooks = "pre-commit run --hook-stage pre-push --all-files"  # same as poe full
+lint = "ruff check . --fix"
 fmt = "ruff format ."
-typecheck = "mypy --sqlite-cache --pretty src tests"
+typecheck = "mypy src"
+typecheck-full = "mypy src tests"
 test = "pytest -q"
 
 [build-system]
@@ -81,6 +88,7 @@ exclude = [
 target-version = "py313"
 line-length = 100
 fix = true
+force-exclude = true
 
 [tool.ruff.lint]
 # Core codes: pyflakes/pycodestyle/imports/bugbear/pyupgrade/simplify + Ruff rules.
@@ -100,6 +108,8 @@ pythonpath = ["src"]
 
 [tool.mypy]
 python_version = "3.13"
+mypy_path = ["src"]
+sqlite_cache = true
 ignore_missing_imports = true
 warn_unused_ignores = true
 warn_redundant_casts = true
@@ -107,4 +117,12 @@ warn_unused_configs = true
 no_implicit_optional = true
 disallow_untyped_defs = true
 check_untyped_defs = true
+strict = true
 pretty = true
+
+# Looser rules for tests
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false   # Don’t require annotations
+check_untyped_defs = true       # But still analyze bodies of untyped defs
+warn_unused_ignores = false     # Reduced nagging for tests

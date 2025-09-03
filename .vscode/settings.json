@@ -23,6 +23,8 @@
     "tests"
   ],
   "python.envFile": "${workspaceFolder}/.env",
+  // now the default, but left for clarity
+  "terminal.integrated.shellIntegration.enabled": true,
   // Keep other languages tidy
   "[jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features"
