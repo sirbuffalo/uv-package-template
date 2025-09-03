@@ -16,7 +16,9 @@ This file guides AI coding assistants working in this repo. Follow these rules t
   - Format: `poe fmt`
   - Typecheck: `poe typecheck`
   - Test: `poe test`
-  - All checks: `poe check`
+  - Fast checks: `poe fast`
+  - All checks: `poe full`
+  - Install hooks: `poe install-hooks`
 - Example run: `poe run` (or without poe: `uv run main` or `uv run python -m uv_package_template`)
 
 ## Style and conventions
@@ -32,7 +34,7 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - Framework: pytest; root import path includes `src/`
 - Write focused tests for new behavior; mirror module names when practical
 - Use fixtures as in existing tests: `monkeypatch`, `caplog`
-- Ensure `poe check` passes before proposing changes
+- Ensure `poe full` passes before proposing changes
 
 ## Architecture notes (apply when implementing features)
 - Keep `__init__.py` free of side effects
@@ -61,7 +63,7 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 - Adding a function:
   - Place under `src/uv_package_template/` with types and docstring
   - Add/modify tests in `tests/`
-  - Run `poe check`
+  - Run `poe full`
 - Extending CLI behavior:
   - Modify `__main__.py` only for orchestration and logging
   - Keep env logic in `env_vars.py` and core logic in separate modules (unit-testable)
@@ -75,7 +77,7 @@ This file guides AI coding assistants working in this repo. Follow these rules t
 
 ## Commit and PR guidance
 - Commits: imperative, concise (e.g., "Add ruff config", "Fix CLI exit")
-- Before PR: run `poe check`; update docs if behavior changes
+- Before PR: run `poe full`; update docs if behavior changes
 - PR description: what/why, notable decisions, linked issues; include logs or screenshots if CLI output changes
 
 ## File map (high-level)

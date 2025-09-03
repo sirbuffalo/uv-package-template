@@ -14,9 +14,14 @@
 - Format: `poe fmt` (ruff format).
 - Type check: `poe typecheck` (mypy with cache).
 - Test: `poe test` (pytest, quiet).
-- All checks: `poe check` (lint → typecheck → test). Run before pushing.
+- All checks: `poe full` (lint → format → mypy → pytest). Run before pushing.
 - Run CLI: `poe run` (or without poe: `uv run main` or `uv run python -m uv_package_template`.)
 - Build: `uv build` (hatchling). Publish: `uv publish`.
+
+Hooks:
+
+- Install Git hooks after syncing: `poe install-hooks`
+- Test hooks against all files (same intent as `poe full`): `poe hooks`
 
 ## Coding Style & Naming
 
@@ -35,7 +40,7 @@
 ## Commit & Pull Requests
 
 - Commit style: imperative, concise, present tense (e.g., "Add ruff config", "Fix CLI exit"). Group related changes.
-- Before PR: `poe check` must pass; update docs as needed.
+- Before PR: `poe full` must pass; update docs as needed.
 - PR description: what/why, notable decisions, linked issues (e.g., `Closes #123`). Include logs/screenshots for CLI output changes.
 
 ## Security & Configuration

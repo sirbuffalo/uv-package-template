@@ -55,6 +55,7 @@ type = "uv"
 # run these with `poe <task>`
 sync = { cmd = "uv sync --project ." }    # Create env with dev group
 upgrade = { cmd = "uv sync --project . --upgrade" }
+install-hooks = "pre-commit install --hook-type pre-commit --hook-type pre-push"
 # Sometimes `poe run` works when `uv run main` doesn't
 run = { cmd = "python -m uv_package_template", env = { PYTHONPATH = "src" } }
 fast = { sequence = ["lint", "fmt", "typecheck"] }

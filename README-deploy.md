@@ -79,7 +79,7 @@ Environment=PATH=/opt/uv-package-template/.local/bin:/usr/local/sbin:/usr/local/
 # If you run without installing the package, ensure PYTHONPATH points at src
 # Environment=PYTHONPATH=/opt/uv-package-template/uv-package-template/src
 
-ExecStart=/opt/uv-package-template/.local/bin/uv run gunicorn -w 2 -b 127.0.0.1:9000 "uv-package-template.cli:main"
+ExecStart=/opt/uv-package-template/.local/bin/uv run gunicorn -w 2 -b 127.0.0.1:9000 "uv-package-template.__main__:main"
 Restart=on-failure
 RestartSec=3s
 KillSignal=SIGINT

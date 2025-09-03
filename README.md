@@ -72,6 +72,7 @@ direnv allow .
 Dev machine:
 
 - `poe sync` (Create dev environment)
+- `poe install-hooks` (Install Git hooks: pre-commit and pre-push)
 - `poe run` (logs a message and runs example logic)
 
 Production (no dev tools):
@@ -86,12 +87,14 @@ Production (no dev tools):
 - Dev commands are task run with Poe (installed with the dev group):
   - Sync dependencies: `poe sync`
   - Sync and upgrade dependencies: `poe upgrade`
+  - Install Git hooks (pre-commit, pre-push): `poe install-hooks`
   - Basic checks: `poe fast`
   - Full checks: `poe full`
   - Lint: `poe lint`
   - Format: `poe fmt`
   - Type check: `poe typecheck`
   - Tests: `poe test`
+  - Hooks against all files: `poe hooks` (same intent at `poe full`)
 - Add dependencies: `uv add <package>` (example: `uv add flask`)
 - Add dev tools: `uv add --group dev <tool>` (e.g., `pytest-cov`)
 
